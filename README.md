@@ -1,20 +1,25 @@
 # SQL学习
 相关数据库SQL总结
 
+![Alt text](image.png)
+
+
 ## Postgresql总结
 
 控制台操作命令
 
-设置密码  \password dbuser
-退出控制台 \q
-查看sql命令的解释 \h sql语句
-列出所有数据库 \l
-进入其他数据库 \c [db_name]
-列出当前数据库的所有表 \d
-列出某一张表的结果 \d [table_name]
-列出所有用户 \du 
-打开文本编辑器 \e 
-列出数据库连接信息 \conninfo
+|操作|命令|
+|----|----|
+|设置密码|  \password dbuser| 
+|退出控制台| \q|
+查看sql命令的解释| \h sql语句
+列出所有数据库| \l
+进入其他数据库| \c [db_name]
+列出当前数据库的所有表| \d
+列出某一张表的结果| \d [table_name]
+列出所有用户 |\du 
+打开文本编辑器| \e 
+列出数据库连接信息| \conninfo
 
 查询当前的连接数:
 select * from pg_stat_activity;
