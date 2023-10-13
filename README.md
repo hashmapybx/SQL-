@@ -1,9 +1,7 @@
 # SQL学习
 相关数据库SQL总结
 
-![Alt text](image.png)
-
-
+![Alt text](image-1.png)
 ## Postgresql总结
 
 控制台操作命令
