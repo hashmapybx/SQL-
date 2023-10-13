@@ -37,4 +37,21 @@ create table t_key_event_file_student_100 as select * from t_key_event_file_stud
 like 不会复制数据，并且复制对应字段的约束。
 create table as 会复制数据。所有的约束，注释和序列都没有复制成功。
 
+Tchouse 的优化策略
 
+
+## 列存储和行存储的区别
+
+这篇文章写的很详细：我不在重复轮子了。
+
+https://www.cnblogs.com/xuwc/p/14037950.html
+
+**行存储和列存储最大的区别：**
+
+- 行存储有利于数据的写入，写入性能高，读取性能差，常于OLTP系统
+- 列存储有利于数据的读取，写入性能差，适用于现在流行的OLAP系统
+
+## Starrocks 学习
+
+详细教程
+https://blog.csdn.net/ult_me?spm=1000.2115.3001.5343
