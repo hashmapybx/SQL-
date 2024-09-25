@@ -1,3 +1,11 @@
+<!--
+ * @Author: hashmapybx 15868861416@163.com
+ * @Date: 2023-09-12 16:00:43
+ * @LastEditors: hashmapybx 15868861416@163.com
+ * @LastEditTime: 2024-09-25 22:40:54
+ * @FilePath: /SQL-/README.md
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE 
+-->
 # SQL学习
 相关数据库SQL总结
 
@@ -50,6 +58,16 @@ https://www.cnblogs.com/xuwc/p/14037950.html
 - 列存储有利于数据的读取，写入性能差，适用于现在流行的OLAP系统
 
 ## Starrocks 学习
+
+### 表模型
+
+在**明细表**中排序键是Duplicate key 指定的字段，不满足唯一性约束的。
+
+在**聚合表**中排序键是Aggregate key 指定的字段。并且排序键需要满足唯一性约束
+
+在**更新表**排序键是UNIQUe key 指定的字段，并且必须要满足唯一性约束。
+
+在**主键表**中，可以定义主键和排序键，主键primary key需要满足唯一性和非空的约束，主键相同的数据进行REPLACE操作，排序键由ORDER BY指定。
 
 详细教程
 https://blog.csdn.net/ult_me?spm=1000.2115.3001.5343
