@@ -2,7 +2,7 @@
  * @Author: hashmapybx 15868861416@163.com
  * @Date: 2023-09-12 16:00:43
  * @LastEditors: hashmapybx 15868861416@163.com
- * @LastEditTime: 2024-09-25 22:40:54
+ * @LastEditTime: 2024-09-25 22:55:31
  * @FilePath: /SQL-/README.md
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE 
 -->
@@ -68,6 +68,17 @@ https://www.cnblogs.com/xuwc/p/14037950.html
 在**更新表**排序键是UNIQUe key 指定的字段，并且必须要满足唯一性约束。
 
 在**主键表**中，可以定义主键和排序键，主键primary key需要满足唯一性和非空的约束，主键相同的数据进行REPLACE操作，排序键由ORDER BY指定。
+
+
+### 明细表
+
+默认的建表类型，在创建表的时候未指定任何key, 则默认都是明细表。
+
+创建表时，支持定义排序键。如果查询的过滤条件包含排序键，则 StarRocks 能够快速地过滤数据，提高查询效率。明细表适用于日志数据分析等场景，**支持追加新数据，不支持修改历史数据**
+
+适用场景：
+
+导入历史数据，不更新历史数据，只会追加新的数据。（日志或者是时序数据）
 
 详细教程
 https://blog.csdn.net/ult_me?spm=1000.2115.3001.5343
