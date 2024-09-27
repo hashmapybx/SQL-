@@ -2,7 +2,7 @@
  * @Author: hashmapybx 15868861416@163.com
  * @Date: 2023-09-12 16:00:43
  * @LastEditors: hashmapybx 15868861416@163.com
- * @LastEditTime: 2024-09-25 22:55:31
+ * @LastEditTime: 2024-09-27 18:57:58
  * @FilePath: /SQL-/README.md
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE 
 -->
@@ -80,5 +80,111 @@ https://www.cnblogs.com/xuwc/p/14037950.html
 
 导入历史数据，不更新历史数据，只会追加新的数据。（日志或者是时序数据）
 
-详细教程
-https://blog.csdn.net/ult_me?spm=1000.2115.3001.5343
+```sql
+CREATE TABLE IF NOT EXISTS detail (
+    event_time DATETIME NOT NULL COMMENT "datetime of event",
+    event_type INT NOT NULL COMMENT "type of event",
+    user_id INT COMMENT "id of user",
+    device_code INT COMMENT "device code",
+    channel INT COMMENT ""
+)
+DUPLICATE KEY(event_time, event_type)
+DISTRIBUTED BY HASH(user_id)
+PROPERTIES (
+"replication_num" = "3"
+);
+```
+注意事项：
+
+1、建表的时候没有指定排序键，默认是前面三列。
+
+2、明细表的排序键可以是部分或者全部的维度列。
+
+3、建表时，支持为指标列创建 BITMAP、Bloom Filter 等索引
+
+### 主键表
+
+主键用于标识每一行数据的唯一性，在主键的多个列中，都具有非空唯一性约束。注意事项：
+
+- 在建表时，主键列必须定义在其他列之前。
+- 主键必须包含分区列和分桶列。
+- 主键列支持的数据类型： 数值（整形和布尔），日期和字符串。
+- 单条主键值编码后的最大长度为 128 字节。
+- 建表后的主键不能修改。
+- 主键列不能更新，避免破坏数据一致性。
+
+```sql
+CREATE TABLE orders2 (
+    order_id bigint NOT NULL,
+    dt date NOT NULL,
+    merchant_id int NOT NULL,
+    user_id int NOT NULL,
+    good_id int NOT NULL,
+    good_name string NOT NULL,
+    price int NOT NULL,
+    cnt int NOT NULL,
+    revenue int NOT NULL,
+    state tinyint NOT NULL
+)
+PRIMARY KEY (order_id,dt,merchant_id)
+PARTITION BY date_trunc('day', dt)
+DISTRIBUTED BY HASH (merchant_id)
+ORDER BY (dt,merchant_id)
+PROPERTIES (
+    "enable_persistent_index" = "true"
+);
+```
+
+### 聚合表
+建表时指定排序键和指标列，在指标列上应用聚合函数（sum,avg等），这样聚合表会减少处理的数据量，提高查询效率。
+
+- 适用场景
+
+分析统计和汇总数据：
+
+1、通过分析网站或 APP 的访问流量，统计用户的访问总时长、访问总次数。
+
+2、广告厂商为广告主提供的广告点击总量、展示总量、消费统计等。
+
+3、通过分析电商的全年交易数据，获得指定季度或者月份中，各类消费人群的爆款商品。
+
+以上场景都是统计数据，不需要查询明细数据，而且历史数据不会更新，只是做追加新数据。
+
+demo: 分析某一个时间段，来自不同城市的用户，访问不同网页的次数。将网页地址`site_id`，日期`date`城市代码`city_code`作为排序键，访问次数`PV`作为指标列，并且指定聚合函数SUM。
+
+```sql
+CREATE TABLE IF NOT EXISTS example_db.aggregate_tbl (
+    site_id LARGEINT NOT NULL COMMENT "id of site",
+    date DATE NOT NULL COMMENT "time of event",
+    city_code VARCHAR(20) COMMENT "city_code of user",
+    pv BIGINT SUM DEFAULT "0" COMMENT "total page views"
+)
+AGGREGATE KEY(site_id, date, city_code)
+DISTRIBUTED BY HASH(site_id)
+PROPERTIES (
+"replication_num" = "3"
+);
+```
+
+注意事项：
+
+1、DISTRIBUTED BY HASH 指定分桶键
+
+2、排序键AGGREGATE KEY 如果没有包含全部维度列（除去指标列外的所有列），那么建表会失败。
+
+3、如果不指定AGGREGATE KEY 。默认是除了指标列外的所有列都是排序键。
+
+4、指标列一般为需要统计汇总的数据。
+
+5、查询时，排序键在多版聚合之前就能进行过滤，而指标列的过滤在多版本聚合之后。因此建议将频繁使用的过滤字段作为排序键，在聚合前就能过滤数据，从而提升查询性能
+
+6、建表时，不支持为指标列创建 BITMAP、Bloom Filter 等索引
+
+
+
+
+
+
+## starrocks 参考学习博客
+
+1. https://blog.csdn.net/ult_me?spm=1000.2115.3001.5343
